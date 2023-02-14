@@ -47,6 +47,15 @@ import Auth from "./../Login";
 import { AuthContext } from "./../context/AuthContext";
 import auth from "./../firebaseSetup";
 
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import CheckoutForm from "../payment/CheckOutForm.js";
+import "./payment.css";
+
+const promise = loadStripe("pk_test_YVzIqUTwiCYcEXO1DPqDrM98");
+
+
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,6 +66,27 @@ const Dashboard = (): JSX.Element => {
     await auth.signOut();
     navigate('/');
   }
+
+  const [clientSecret, setClientSecret] = useState("");
+
+  useEffect(() => {
+    // Create PaymentIntent as soon as the page loads
+    fetch("/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret));
+  }, []);
+
+  const appearance = {
+    theme: 'stripe',
+  };
+  const options = {
+    clientSecret,
+    appearance,
+  };
 
 
   const { activeAddress } = useTezosCollectStore();
@@ -306,6 +336,7 @@ const Dashboard = (): JSX.Element => {
                 <Link to={"/auth"}>
                   Login/Signup
                 </Link>
+                
               </button>
                   ) : (
               <button
@@ -317,7 +348,6 @@ const Dashboard = (): JSX.Element => {
                 Logout
               </button>
                   )}
-              
               
               <Modal
                 onClose={() => {
@@ -390,6 +420,13 @@ const Dashboard = (): JSX.Element => {
             <div>Collectors</div>
           </div>
         </section>
+        <section className="text-yellow-75 grid grid-cols-2 md:grid-cols-4 gap-4 font-mathias mb-16 -mt-36 sm:-mt-24 pt-24 md:-mt-10 lg:-mt-10">
+          <div className="App">
+            <Elements stripe={promise}>
+              <CheckoutForm />
+            </Elements>
+          </div>
+        </section>
         <Content
           release_art={result?.release_art}
           player_thumbnail={result?.player_thumbnail}
@@ -420,6 +457,7 @@ const Dashboard = (): JSX.Element => {
         <Collection />
         <Miscellaneous />
         <Footer />
+        
       </div>
       {/* } */}
     </div>
