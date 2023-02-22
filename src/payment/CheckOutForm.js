@@ -135,10 +135,8 @@ const StripeButton = ({ price }) => {
       .then((response) => {
         if (response.ok) {
           // Payment succeeded
-          alert('Payment successful');
         } else {
           // Payment failed
-          alert('Payment failed');
         }
       })
       .catch((error) => {
