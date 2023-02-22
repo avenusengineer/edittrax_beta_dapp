@@ -339,7 +339,7 @@ const Dashboard = (): JSX.Element => {
             </div>
             <div className="flex gap-4 items-center">
               {/* <div className="font-mathias sm:bg-black sm:rounded sm:text-yellow-75 px-2 sm:font-bold sm:py-2 sm:w-40 hover:text-gray-300 text-md hover:opacity-50"> */}
-                <StripeButton price={50} />
+              { user ? (<StripeButton price={50} />) : <></>}
                 {/* <button onClick={() => {
                       handlePayment("");
                     }}>Stripe</button> */}
