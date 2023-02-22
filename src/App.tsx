@@ -7,7 +7,8 @@ import { Web3ReactProvider } from '@web3-react/core';
 import { getLibrary } from './wallet/wallet';
 import MetamaskProvider from './wallet/useEagerConnect';
 import ReactGA from 'react-ga';
-import Auth from "./Login";
+import Login from "./auth/Login";
+import Signup from "./auth/Signup";
 import {
   BrowserRouter,
   Routes,
@@ -33,7 +34,8 @@ const App = () => {
               <Route path="/" element={ <Navigate to="/edit-trax/et004"/> }/>
               <Route path="/edit-trax/:id" element={<Dashboard/>} />
               <Route path="/test" element={<DashEther/>}/>
-              <Route path="/auth" element={<Auth/>}/>
+              <Route path="/login" element={<Login/>}/>
+              <Route path="signup" element={<Signup/>}/>
             </Routes>
           </BrowserRouter>
         </MetamaskProvider>

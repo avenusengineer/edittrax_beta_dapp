@@ -43,16 +43,19 @@ import {
   Link,
   useNavigate
 } from "react-router-dom";
-import Auth from "./../Login";
+import Auth from "../auth/Login";
 import { AuthContext } from "./../context/AuthContext";
 import auth from "./../firebaseSetup";
 
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "../payment/CheckOutForm.js";
+import StripeButton from "../payment/CheckOutForm.js";
 import "./payment.css";
+import firebase from 'firebase/compat/app';
+import 'firebase/database';
+import { tokenToString } from "typescript";
 
-const promise = loadStripe("pk_test_YVzIqUTwiCYcEXO1DPqDrM98");
+const promise = loadStripe("pk_test_51MYhN4G8mpfIqU4dEnjnGeWh6gBnydCFoAu8Kf0JPjT08v2JeP7DWZaITmYw1JDvefYje2qksFUWv1YQZ6pmQfmp00rfRc0eAR");
 
 
 
@@ -66,6 +69,25 @@ const Dashboard = (): JSX.Element => {
     await auth.signOut();
     navigate('/');
   }
+
+
+  
+  
+  const handlePayment = async (token: string): Promise<void> => {
+    try {
+      const paymentData = {
+        amount: 50,
+        token: token,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+      };
+      await firebase.database().ref('payments').push(paymentData);
+      console.log('Payment successful');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  
 
   const [clientSecret, setClientSecret] = useState("");
 
@@ -316,6 +338,12 @@ const Dashboard = (): JSX.Element => {
               </ul>
             </div>
             <div className="flex gap-4 items-center">
+              {/* <div className="font-mathias sm:bg-black sm:rounded sm:text-yellow-75 px-2 sm:font-bold sm:py-2 sm:w-40 hover:text-gray-300 text-md hover:opacity-50"> */}
+                <StripeButton price={50} />
+                {/* <button onClick={() => {
+                      handlePayment("");
+                    }}>Stripe</button> */}
+              {/* </div> */}
               <button
                 className="font-mathias sm:bg-black sm:rounded sm:text-yellow-75 px-2 sm:font-bold sm:py-2 sm:w-40 hover:text-gray-300 text-md hover:opacity-50"
                 onClick={() => {
@@ -333,7 +361,7 @@ const Dashboard = (): JSX.Element => {
                   
                 // }}
               >
-                <Link to={"/auth"}>
+                <Link to={"/login"}>
                   Login/Signup
                 </Link>
                 
@@ -377,6 +405,7 @@ const Dashboard = (): JSX.Element => {
               </div> */}
             </div>
           </div>
+          {user ? (
           <div className="mx-4 md:mx-0 h-iframeLoad">
             {param.id == "et005" ? (
               <iframe
@@ -392,6 +421,9 @@ const Dashboard = (): JSX.Element => {
               />
             )}
           </div>
+          ) : (
+                    <h2 className="font-mathias sm:bg-black sm:rounded sm:text-yellow-75 px-2 sm:font-bold sm:py-2 sm:w-500 hover:text-gray-300 text-md hover:opacity-50" style={{ textAlign: "center", color: "red", background: "white" }}>You can't access this field, please log in!</h2>
+                  )}
           <div
             className="bg-yellow-75 flex justify-center py-3 md:py-8 mx-4 md:mx-0 max-w-full font-bold text-lg"
             ref={dwnArrow}
@@ -420,13 +452,7 @@ const Dashboard = (): JSX.Element => {
             <div>Collectors</div>
           </div>
         </section>
-        <section className="text-yellow-75 grid grid-cols-2 md:grid-cols-4 gap-4 font-mathias mb-16 -mt-36 sm:-mt-24 pt-24 md:-mt-10 lg:-mt-10">
-          <div className="App">
-            <Elements stripe={promise}>
-              <CheckoutForm />
-            </Elements>
-          </div>
-        </section>
+        {user ? (
         <Content
           release_art={result?.release_art}
           player_thumbnail={result?.player_thumbnail}
@@ -454,6 +480,7 @@ const Dashboard = (): JSX.Element => {
           // masterPlay={result?.masterPlay}
           // lock={result?.lock}
         />
+        ) : (<div>Please pay</div>)}
         <Collection />
         <Miscellaneous />
         <Footer />

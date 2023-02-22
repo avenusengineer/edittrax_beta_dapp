@@ -10,6 +10,7 @@ const firebaseConfig = {
   appId: "1:908289181003:web:4c3ddff84a9924bde6d4ce"
 }; //this is where your firebase app values you copied will go
 
+
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
